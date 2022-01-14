@@ -37,7 +37,7 @@ class IncomingStockServiceImplTest {
         IncomingStockRequestDto incomingStock = new IncomingStockRequestDto(
                 "Hp EliteBook",
                 "Hp",
-                "ELectronic",
+                "Electronic",
                 12000.00,
                 10
         );
@@ -46,5 +46,6 @@ class IncomingStockServiceImplTest {
         incomingStockService.addProduct(incomingStock);
         verify(incomingStockRepository, times(1)).save(stock);
     }
+
 
 }
