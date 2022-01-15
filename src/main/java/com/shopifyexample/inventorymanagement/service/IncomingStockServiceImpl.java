@@ -8,6 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 public class IncomingStockServiceImpl implements IncomingStockService {
@@ -23,7 +25,13 @@ public class IncomingStockServiceImpl implements IncomingStockService {
     }
 
     @Override
-    public IncomingStockResponseDto deleteProduct(Long productId) {
-        return null;
+    public IncomingStockResponseDto findById(Long productId) {
+        ModelMapper modelMapper = new ModelMapper();
+         Optional<IncomingStock> stockContainer = incomingStockRepository.findById(productId);
+         if(stockContainer.isPresent()) {
+             IncomingStock stock = stockContainer.get();
+             return modelMapper.map(stock, IncomingStockResponseDto.class);
+         }
+        throw new IllegalStateException("Id does not exist");
     }
 }

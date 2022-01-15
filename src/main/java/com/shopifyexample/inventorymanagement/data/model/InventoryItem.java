@@ -1,5 +1,7 @@
 package com.shopifyexample.inventorymanagement.data.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Entity;
@@ -10,6 +12,8 @@ import java.time.LocalDate;
 
 
 @Entity
+@NoArgsConstructor
+@Data
 public class InventoryItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,4 +23,14 @@ public class InventoryItem {
     private boolean isInStock;
     @UpdateTimestamp
     private LocalDate updatedDate;
+
+
+
+
+
+
+
+
+
+
 }
