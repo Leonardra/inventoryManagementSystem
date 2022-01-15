@@ -69,8 +69,6 @@ class IncomingStockServiceImplTest {
         incomingStockService.findById(1L);
         verify(incomingStockRepository, times(1)).findById(any());
         verify(incomingStockRepository, times(1)).save(stock);
-
     }
-
 
 }

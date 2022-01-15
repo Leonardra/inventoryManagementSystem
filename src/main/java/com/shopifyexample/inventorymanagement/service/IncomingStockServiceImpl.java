@@ -8,7 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -33,5 +35,14 @@ public class IncomingStockServiceImpl implements IncomingStockService {
              return modelMapper.map(stock, IncomingStockResponseDto.class);
          }
         throw new IllegalStateException("Id does not exist");
+    }
+
+    @Override
+    public List<IncomingStockResponseDto> findAll() {
+        ModelMapper modelMapper = new ModelMapper();
+        List<IncomingStock> stocks = incomingStockRepository.findAll();
+        return stocks.stream()
+                .map(e -> modelMapper.map(e, IncomingStockResponseDto.class))
+                .collect(Collectors.toList());
     }
 }
