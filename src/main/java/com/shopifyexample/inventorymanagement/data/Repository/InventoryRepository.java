@@ -1,8 +1,11 @@
 package com.shopifyexample.inventorymanagement.data.Repository;
 
-import com.shopifyexample.inventorymanagement.data.model.InventoryItem;
+import com.shopifyexample.inventorymanagement.data.model.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface InventoryRepository extends JpaRepository<InventoryItem, Long> {
+
+@Repository
+public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
 }

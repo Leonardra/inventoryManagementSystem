@@ -1,5 +1,5 @@
 package com.shopifyexample.inventorymanagement.web.controller;
 
-public class IncomingStockController {
+public class InventoryController {
 
 }

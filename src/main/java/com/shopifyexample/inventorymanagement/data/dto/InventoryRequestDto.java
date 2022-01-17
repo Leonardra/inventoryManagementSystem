@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class IncomingStockRequestDto {
+public class InventoryRequestDto {
     private String productName;
     private String brand;
     private String productCategory;
