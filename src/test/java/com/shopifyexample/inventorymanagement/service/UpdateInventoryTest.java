@@ -20,7 +20,7 @@ public class UpdateInventoryTest {
     InventoryRepository inventoryRepository;
 
     @Test
-    void update(){
+    void updateInventory(){
         Inventory item = inventoryRepository.findById(1L).orElse(null);
         assertThat(item).isNotNull();
         InventoryRequestDto incomingStock2 = new InventoryRequestDto(
@@ -31,7 +31,7 @@ public class UpdateInventoryTest {
                 10
         );
 
-        inventoryService.update(1L, incomingStock2);
+        inventoryService.updateInventory(1L, incomingStock2);
         assertThat(item.getProductCategory()).isEqualTo(incomingStock2.getProductCategory());
         assertThat(item.getPrice()).isEqualTo(12000);
     }

@@ -8,6 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,7 +22,7 @@ public class InventoryServiceImpl implements InventoryService {
     InventoryRepository inventoryRepository;
 
     @Override
-    public InventoryResponseDto addProduct(InventoryRequestDto incomingStock) {
+    public InventoryResponseDto addInventory(InventoryRequestDto incomingStock) {
         ModelMapper modelMapper = new ModelMapper();
         Inventory mappedStock = modelMapper.map(incomingStock, Inventory.class);
         Inventory stock = inventoryRepository.save(mappedStock);
@@ -47,12 +50,12 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public void deleteProduct(Long productId){
+    public void deleteInventory(Long productId){
         Optional<Inventory> stock = inventoryRepository.findById(productId);
         stock.ifPresent(value -> inventoryRepository.delete(value));
     }
 
-    public void update(Long id, InventoryRequestDto incomingStock) {
+    public void updateInventory(Long id, InventoryRequestDto incomingStock) {
         if(incomingStock == null){
             throw new NullPointerException("Inventory item cannot be null");
         }
@@ -64,6 +67,19 @@ public class InventoryServiceImpl implements InventoryService {
             inventoryRepository.save(stock);
         }else{
             throw new IllegalArgumentException("Id does not exist for inventory");
+        }
+    }
+
+    public void writeToCsv() throws IOException {
+        File csvFile = new File("inventory.csv");
+        if(!csvFile.exists()) {
+            boolean newFile = csvFile.createNewFile();
+        }
+
+        try (PrintWriter pw = new PrintWriter(csvFile)) {
+            inventoryRepository.findAll().stream()
+                    .map(e -> e.toCsvRow())
+                    .forEach(pw::println);
         }
     }
 }

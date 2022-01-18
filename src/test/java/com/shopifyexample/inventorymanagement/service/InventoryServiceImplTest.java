@@ -47,7 +47,7 @@ class InventoryServiceImplTest {
         );
         Inventory stock = modelMapper.map(incomingStock, Inventory.class);
         when(inventoryRepository.save(stock)).thenReturn(stock);
-        InventoryResponseDto responseStock = inventoryService.addProduct(incomingStock);
+        InventoryResponseDto responseStock = inventoryService.addInventory(incomingStock);
         assertThat(responseStock).isNotNull();
         verify(inventoryRepository, times(1)).save(stock);
     }
@@ -64,7 +64,7 @@ class InventoryServiceImplTest {
 
         Inventory stock = modelMapper.map(incomingStock, Inventory.class);
         when(inventoryRepository.save(stock)).thenReturn(stock);
-        inventoryService.addProduct(incomingStock);
+        inventoryService.addInventory(incomingStock);
         when(inventoryRepository.findById(1L)).thenReturn(Optional.of(stock));
         inventoryService.findById(1L);
         verify(inventoryRepository, times(1)).findById(any());
@@ -83,9 +83,9 @@ class InventoryServiceImplTest {
 
         Inventory stock = modelMapper.map(incomingStock, Inventory.class);
         when(inventoryRepository.save(stock)).thenReturn(stock);
-        inventoryService.addProduct(incomingStock);
+        inventoryService.addInventory(incomingStock);
         when(inventoryRepository.findById(any())).thenReturn(Optional.of(stock)).thenReturn(null);
-        inventoryService.deleteProduct(1L);
+        inventoryService.deleteInventory(1L);
         assertThat(inventoryRepository.findAll().size()).isEqualTo(0);
         verify(inventoryRepository,times(1)).delete(any());
     }

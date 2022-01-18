@@ -12,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Data
@@ -28,4 +30,11 @@ public class Inventory {
     private int quantity;
     @UpdateTimestamp
     private LocalDate dateAdded;
+
+    public String toCsvRow(Inventory inventory) {
+        return Stream.of(id, productName, brand, productCategory, price, quantity, dateAdded)
+                .map(value -> String.valueOf(value).replaceAll("\"", "\"\""))
+                .map(value -> Stream.of("\"", ",").anyMatch(value::contains) ? "\"" + value + "\"" : value)
+                .collect(Collectors.joining(","));
+    }
 }
