@@ -99,8 +99,23 @@ public class InventoryServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test should pass if an exception is thrown when an inventory id is invalid")
     void testThatAnExceptionIsThrownIfIdIsInvalid(){
         assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(4L));
+    }
+
+    @Test
+    @DisplayName("Test should pass if inventory id can't be found after successful deletion")
+    void testThatInventoryCanBeDeleted(){
+        InventoryRequestDto inventory3 = new InventoryRequestDto();
+        inventory3.setProductName("Laptop");
+        inventory3.setBrand("Hp");
+        inventory3.setProductCategory("Electronic");
+        inventory3.setPrice(400000.00);
+        inventoryService.addInventory(inventory3);
+        assertThat(inventoryService.findById(3L)).isNotNull();
+        inventoryService.deleteInventory(3L);
+        assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(3L));
     }
 
 }
