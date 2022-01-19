@@ -23,15 +23,17 @@ public class InventoryServiceImplTest {
     @Autowired
     private InventoryRepository inventoryRepository;
 
+    private InventoryRequestDto inventory;
+    private InventoryRequestDto inventory2;
     @BeforeEach
     void setUp() {
-        InventoryRequestDto inventory = new InventoryRequestDto();
+        inventory = new InventoryRequestDto();
         inventory.setProductName("Laptop");
         inventory.setBrand("Hp");
         inventory.setProductCategory("Electronics");
         inventory.setPrice(400000.00);
 
-        InventoryRequestDto inventory2 = new InventoryRequestDto();
+        inventory2 = new InventoryRequestDto();
         inventory2.setProductName("Refrigerator");
         inventory2.setBrand("Heier Thermocool");
         inventory2.setProductCategory("Household");
@@ -116,6 +118,19 @@ public class InventoryServiceImplTest {
         assertThat(inventoryService.findById(3L)).isNotNull();
         inventoryService.deleteInventory(3L);
         assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(3L));
+    }
+
+
+    @Test
+    void testThatInventoryCanBeUpdated() {
+        InventoryRequestDto inventory3 = new InventoryRequestDto();
+        inventory3.setProductName("Laptop");
+        inventory3.setBrand("Hp");
+        inventory3.setProductCategory("Electronic");
+        inventory3.setPrice(400000.00);
+        assertThat(inventory2.getProductCategory()).isEqualTo("Household");
+        inventoryService.updateInventory(2L, inventory3);
+        assertThat(inventoryService.findById(2L).getProductCategory()).isEqualTo("Electronic");
     }
 
 }
