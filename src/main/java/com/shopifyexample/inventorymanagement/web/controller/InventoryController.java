@@ -1,6 +1,7 @@
 package com.shopifyexample.inventorymanagement.web.controller;
 
 import com.shopifyexample.inventorymanagement.data.dto.InventoryRequestDto;
+import com.shopifyexample.inventorymanagement.exception.InventoryException;
 import com.shopifyexample.inventorymanagement.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,11 @@ public class InventoryController {
 
     @PostMapping("")
     public ResponseEntity<?> addInventory(@RequestBody InventoryRequestDto inventory){
-        return new ResponseEntity<>(inventoryServiceImpl.addInventory(inventory), HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(inventoryServiceImpl.addInventory(inventory), HttpStatus.OK);
+        }catch(InventoryException ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("")
