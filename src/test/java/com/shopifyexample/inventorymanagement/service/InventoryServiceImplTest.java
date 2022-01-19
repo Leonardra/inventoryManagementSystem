@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -131,6 +133,11 @@ public class InventoryServiceImplTest {
         assertThat(inventory2.getProductCategory()).isEqualTo("Household");
         inventoryService.updateInventory(2L, inventory3);
         assertThat(inventoryService.findById(2L).getProductCategory()).isEqualTo("Electronic");
+    }
+
+    @Test
+    void generateCSVFile() throws IOException {
+        inventoryService.writeToCsv();
     }
 
 }
