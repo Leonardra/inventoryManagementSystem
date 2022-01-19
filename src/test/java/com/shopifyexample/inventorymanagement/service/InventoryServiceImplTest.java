@@ -1,93 +1,106 @@
 package com.shopifyexample.inventorymanagement.service;
 
+
 import com.shopifyexample.inventorymanagement.data.Repository.InventoryRepository;
 import com.shopifyexample.inventorymanagement.data.dto.InventoryRequestDto;
 import com.shopifyexample.inventorymanagement.data.dto.InventoryResponseDto;
 import com.shopifyexample.inventorymanagement.data.model.Inventory;
+import com.shopifyexample.inventorymanagement.exception.InventoryException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
-@ExtendWith(MockitoExtension.class)
-class InventoryServiceImplTest {
-
-    @InjectMocks
-    InventoryServiceImpl inventoryService;
-    @Mock
-    InventoryRepository inventoryRepository;
-
-    private ModelMapper modelMapper;
+@SpringBootTest
+public class InventoryServiceImplTest {
+    @Autowired
+    private InventoryService inventoryService;
+    @Autowired
+    private InventoryRepository inventoryRepository;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        modelMapper = new ModelMapper();
+        InventoryRequestDto inventory = new InventoryRequestDto();
+        inventory.setProductName("Laptop");
+        inventory.setBrand("Hp");
+        inventory.setProductCategory("Electronics");
+        inventory.setPrice(400000.00);
+
+        InventoryRequestDto inventory2 = new InventoryRequestDto();
+        inventory2.setProductName("Refrigerator");
+        inventory2.setBrand("Heier Thermocool");
+        inventory2.setProductCategory("Household");
+        inventory2.setPrice(60000.00);
+
+        inventoryService.addInventory(inventory);
+        inventoryService.addInventory(inventory2);
+
+    }
+
+    @AfterEach
+    void tearDown() {
+        inventoryRepository.deleteAll();
     }
 
     @Test
-    void addProduct() {
-        InventoryRequestDto incomingStock = new InventoryRequestDto(
-                "Hp EliteBook",
-                "Hp",
-                "Electronic",
-                12000.00,
-                10
-        );
-        Inventory stock = modelMapper.map(incomingStock, Inventory.class);
-        when(inventoryRepository.save(stock)).thenReturn(stock);
-        InventoryResponseDto responseStock = inventoryService.addInventory(incomingStock);
-        assertThat(responseStock).isNotNull();
-        verify(inventoryRepository, times(1)).save(stock);
+    @DisplayName("Test should pass if an inventory is added successfully")
+    void testThatInventoryCanBeAdded(){
+        InventoryRequestDto inventory3 = new InventoryRequestDto();
+        inventory3.setProductName("Laptop");
+        inventory3.setBrand("Hp");
+        inventory3.setProductCategory("Electronics");
+        inventory3.setPrice(400000.00);
+        inventoryService.addInventory(inventory3);
+        assertThat(inventoryRepository.findAll().size()).isEqualTo(3);
     }
 
     @Test
-    void findStockById(){
-        InventoryRequestDto incomingStock = new InventoryRequestDto(
-                "Hp EliteBook",
-                "Hp",
-                "Electronic",
-                12000.00,
-                10
-        );
+    @DisplayName("Test should pass if a null pointer exception is thrown")
+    void testThatInventoryCannotBeNull(){
+        InventoryRequestDto inventory = null;
+        assertThrows(NullPointerException.class, ()->inventoryService.addInventory(inventory));
+    }
 
-        Inventory stock = modelMapper.map(incomingStock, Inventory.class);
-        when(inventoryRepository.save(stock)).thenReturn(stock);
-        inventoryService.addInventory(incomingStock);
-        when(inventoryRepository.findById(1L)).thenReturn(Optional.of(stock));
-        inventoryService.findById(1L);
-        verify(inventoryRepository, times(1)).findById(any());
-        verify(inventoryRepository, times(1)).save(stock);
+
+    @Test
+    @DisplayName("Test should pass if database doesn't save inventory without product name")
+    void testThatInventoryCannotHaveEmptyProductName(){
+        InventoryRequestDto inventory3 = new InventoryRequestDto();
+        inventory3.setProductName("");
+        inventory3.setBrand("Hp");
+        inventory3.setProductCategory("Electronics");
+        inventory3.setPrice(400000.00);
+        assertThrows(InventoryException.class, ()->inventoryService.addInventory(inventory3));
+        assertThat(inventoryRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test
-    void deleteStock(){
-        InventoryRequestDto incomingStock = new InventoryRequestDto(
-                "Hp EliteBook",
-                "Hp",
-                "Electronic",
-                12000.00,
-                10
-        );
+    @DisplayName("Test should pass if database doesn't save inventory without product category")
+    void testThatInventoryCannotHaveEmptyProductCategory(){
+        InventoryRequestDto inventory3 = new InventoryRequestDto();
+        inventory3.setProductName("Laptop");
+        inventory3.setBrand("Hp");
+        inventory3.setProductCategory("");
+        inventory3.setPrice(400000.00);
+        assertThrows(InventoryException.class, ()->inventoryService.addInventory(inventory3));
+        assertThat(inventoryRepository.findAll().size()).isEqualTo(2);
+    }
 
-        Inventory stock = modelMapper.map(incomingStock, Inventory.class);
-        when(inventoryRepository.save(stock)).thenReturn(stock);
-        inventoryService.addInventory(incomingStock);
-        when(inventoryRepository.findById(any())).thenReturn(Optional.of(stock)).thenReturn(null);
-        inventoryService.deleteInventory(1L);
-        assertThat(inventoryRepository.findAll().size()).isEqualTo(0);
-        verify(inventoryRepository,times(1)).delete(any());
+    @Test
+    @DisplayName("Test should pass if inventory is found successfully")
+    void testThatInventoryCanBeFoundById(){
+        InventoryResponseDto inventory = inventoryService.findById(1L);
+        assertThat(inventory).isNotNull();
+    }
+
+    @Test
+    void testThatAnExceptionIsThrownIfIdIsInvalid(){
+        assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(4L));
     }
 
 }

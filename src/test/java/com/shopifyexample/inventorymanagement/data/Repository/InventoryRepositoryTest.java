@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Slf4j
-//@Sql(scripts={"/db/insert.sql"})
 class InventoryRepositoryTest {
 
     @Autowired
@@ -27,7 +26,6 @@ class InventoryRepositoryTest {
         inventory.setBrand("HP");
         inventory.setProductCategory("Electronics");
         inventory.setPrice(70000.00);
-        inventory.setQuantity(20);
 
         assertThat(inventory.getId()).isNull();
         log.info("incomingStock before saving -> {}", inventory);

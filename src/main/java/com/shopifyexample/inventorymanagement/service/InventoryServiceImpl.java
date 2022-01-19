@@ -4,6 +4,7 @@ import com.shopifyexample.inventorymanagement.data.Repository.InventoryRepositor
 import com.shopifyexample.inventorymanagement.data.dto.InventoryRequestDto;
 import com.shopifyexample.inventorymanagement.data.dto.InventoryResponseDto;
 import com.shopifyexample.inventorymanagement.data.model.Inventory;
+import com.shopifyexample.inventorymanagement.exception.InventoryException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,26 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public InventoryResponseDto addInventory(InventoryRequestDto incomingStock) {
+        if(incomingStock == null){
+            throw new NullPointerException("Inventory cannot be null");
+        }
+        validateInventory(incomingStock);
         ModelMapper modelMapper = new ModelMapper();
         Inventory mappedStock = modelMapper.map(incomingStock, Inventory.class);
         Inventory stock = inventoryRepository.save(mappedStock);
         return modelMapper.map(stock, InventoryResponseDto.class);
+    }
+
+    private void validateInventory(InventoryRequestDto incomingStock){
+        if(incomingStock.getProductName() == null || incomingStock.getProductName().isBlank()
+                || incomingStock.getProductName().isEmpty()){
+            throw new InventoryException("Inventory must not have empty product name");
+        }
+
+        if(incomingStock.getProductCategory() == null || incomingStock.getProductCategory().isBlank()
+                || incomingStock.getProductCategory().isEmpty()){
+            throw new InventoryException("Inventory must not have empty product category");
+        }
     }
 
     @Override
@@ -37,7 +54,7 @@ public class InventoryServiceImpl implements InventoryService {
              Inventory stock = stockContainer.get();
              return modelMapper.map(stock, InventoryResponseDto.class);
          }
-        throw new IllegalStateException("Id does not exist");
+        throw new IllegalArgumentException("Id does not exist");
     }
 
     @Override
@@ -78,7 +95,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         try (PrintWriter pw = new PrintWriter(csvFile)) {
             inventoryRepository.findAll().stream()
-                    .map(e -> e.toCsvRow())
+                    .map(Inventory::toCsvRow)
                     .forEach(pw::println);
         }
     }
