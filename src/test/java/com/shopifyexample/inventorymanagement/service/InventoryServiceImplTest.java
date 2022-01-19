@@ -27,8 +27,11 @@ public class InventoryServiceImplTest {
 
     private InventoryRequestDto inventory;
     private InventoryRequestDto inventory2;
+    private InventoryResponseDto savedInventory1;
+    private InventoryResponseDto savedInventory2;
     @BeforeEach
     void setUp() {
+        inventoryRepository.deleteAll();
         inventory = new InventoryRequestDto();
         inventory.setProductName("Laptop");
         inventory.setBrand("Hp");
@@ -41,14 +44,14 @@ public class InventoryServiceImplTest {
         inventory2.setProductCategory("Household");
         inventory2.setPrice(60000.00);
 
-        inventoryService.addInventory(inventory);
-        inventoryService.addInventory(inventory2);
+        savedInventory1 = inventoryService.addInventory(inventory);
+        savedInventory2 = inventoryService.addInventory(inventory2);
 
     }
 
     @AfterEach
     void tearDown() {
-        inventoryRepository.deleteAll();
+
     }
 
     @Test
@@ -98,14 +101,14 @@ public class InventoryServiceImplTest {
     @Test
     @DisplayName("Test should pass if inventory is found successfully")
     void testThatInventoryCanBeFoundById(){
-        InventoryResponseDto inventory = inventoryService.findById(1L);
+        InventoryResponseDto inventory = inventoryService.findById(savedInventory1.getId());
         assertThat(inventory).isNotNull();
     }
 
     @Test
     @DisplayName("Test should pass if an exception is thrown when an inventory id is invalid")
     void testThatAnExceptionIsThrownIfIdIsInvalid(){
-        assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(4L));
+        assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(4000L));
     }
 
     @Test
@@ -116,10 +119,10 @@ public class InventoryServiceImplTest {
         inventory3.setBrand("Hp");
         inventory3.setProductCategory("Electronic");
         inventory3.setPrice(400000.00);
-        inventoryService.addInventory(inventory3);
-        assertThat(inventoryService.findById(3L)).isNotNull();
-        inventoryService.deleteInventory(3L);
-        assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(3L));
+        InventoryResponseDto inventoryResponseDto = inventoryService.addInventory(inventory3);
+        assertThat(inventoryService.findById(inventoryResponseDto.getId())).isNotNull();
+        inventoryService.deleteInventory(inventoryResponseDto.getId());
+        assertThrows(IllegalArgumentException.class, ()->inventoryService.findById(inventoryResponseDto.getId()));
     }
 
 
@@ -131,8 +134,8 @@ public class InventoryServiceImplTest {
         inventory3.setProductCategory("Electronic");
         inventory3.setPrice(400000.00);
         assertThat(inventory2.getProductCategory()).isEqualTo("Household");
-        inventoryService.updateInventory(2L, inventory3);
-        assertThat(inventoryService.findById(2L).getProductCategory()).isEqualTo("Electronic");
+        inventoryService.updateInventory(savedInventory2.getId(), inventory3);
+        assertThat(inventoryService.findById(savedInventory2.getId()).getProductCategory()).isEqualTo("Electronic");
     }
 
     @Test

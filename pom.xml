@@ -49,6 +49,7 @@
     </dependencies>
 
     <build>
+        <finalName>inventoryManagement</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
